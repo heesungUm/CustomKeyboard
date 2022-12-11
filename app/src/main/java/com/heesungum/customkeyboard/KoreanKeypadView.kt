@@ -1,0 +1,258 @@
+package com.heesungum.customkeyboard
+
+import android.content.Context
+import android.graphics.Color
+import android.util.AttributeSet
+import android.view.ViewGroup
+import android.view.inputmethod.InputConnection
+import androidx.annotation.AttrRes
+import androidx.annotation.StyleRes
+import androidx.appcompat.view.ContextThemeWrapper
+import androidx.core.content.withStyledAttributes
+import androidx.core.view.children
+import kotlin.math.max
+
+class KoreanKeypadView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    @AttrRes defStyleAttr: Int = R.attr.keyboardViewStyle,
+    @StyleRes defStyleRes: Int = R.style.Keyboard_KoreanKeypadStyle,
+    private val inputConnection: InputConnection,
+) : ViewGroup(ContextThemeWrapper(context, defStyleRes), attrs, defStyleAttr) {
+
+    private val numbers = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0")
+    private val firstLineLetters = listOf("ㅂ", "ㅈ", "ㄷ", "ㄱ", "ㅅ", "ㅛ", "ㅕ", "ㅑ", "ㅐ", "ㅔ")
+    private val secondLineLetters = listOf("ㅁ", "ㄴ", "ㅇ", "ㄹ", "ㅎ", "ㅗ", "ㅓ", "ㅏ", "ㅣ")
+    private val thirdLineLetters = listOf("CAPS", "ㅋ", "ㅌ", "ㅊ", "ㅍ", "ㅠ", "ㅜ", "ㅡ", "DEL")
+    private val fourthLineLetters = listOf("!#@", "한/영", ",", "space", ".", "Enter")
+
+
+    private var _height: Float = 0f
+
+    init {
+        context.withStyledAttributes(attrs, R.styleable.KeyboardView, defStyleAttr, defStyleRes) {
+            _height = getDimension(R.styleable.KeyboardView_letterHeight, 0f)
+        }
+        initLetters()
+
+        setBackgroundColor(Color.BLACK)
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val h = paddingTop + paddingBottom + max(
+            suggestedMinimumHeight,
+            (_height * QWERTY_KEYPAD_COLUMN).toInt()
+        )
+        setMeasuredDimension(getDefaultSize(suggestedMinimumWidth, widthMeasureSpec), h)
+    }
+
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+        val iHeight = (height / 5).toFloat()
+        var rowCount = 0
+        var rowIndex = 0
+        val letterSize = (width / QWERTY_FIRST_LINE).toFloat()
+        var rowHorizontalMargin = 0
+
+        children.forEachIndexed { index, view ->
+            val letterView = view as KeypadLetterView
+
+            var top = 0f
+            when (index) {
+                in 0 until NUMBER_LINE -> {
+                    rowCount = NUMBER_LINE
+                    rowIndex = index
+                    top = 0 * iHeight
+                    rowHorizontalMargin = 0
+                }
+                in QWERTY_FIRST_LINE_START_POSITION..QWERTY_FIRST_LINE_END_POSITION -> {
+                    rowCount = QWERTY_FIRST_LINE
+                    rowIndex = index
+                    top = 1 * iHeight
+                    rowHorizontalMargin = 0
+                }
+                in QWERTY_SECOND_LINE_START_POSITION..QWERTY_SECOND_LINE_END_POSITION -> {
+                    rowCount = QWERTY_SECOND_LINE
+                    rowIndex = index - QWERTY_SECOND_LINE_START_POSITION
+                    top = 2 * iHeight
+                    rowHorizontalMargin = (letterSize / 2).toInt()
+                }
+                in QWERTY_THIRD_LINE_START_POSITION..QWERTY_THIRD_LINE_END_POSITION -> {
+                    rowCount = QWERTY_THIRD_LINE
+                    rowIndex = index - QWERTY_THIRD_LINE_START_POSITION
+                    top = 3 * iHeight
+                    rowHorizontalMargin = (letterSize * 1).toInt() / 2
+                }
+                in QWERTY_FORTH_LINE_START_POSITION..QWERTY_FORTH_LINE_END_POSITION -> {
+                    rowCount = QWERTY_THIRD_LINE
+                    rowIndex = index - QWERTY_THIRD_LINE_START_POSITION
+                    top = 4 * iHeight
+                    rowHorizontalMargin = (letterSize * 1).toInt() / 2
+                }
+            }
+
+            val iWidth = (width / 10).toFloat()
+            val left = when (letterView.text) {
+                "CAPS", "!#1" -> {
+                    0f
+                }
+                ".", "Enter" -> {
+                    (rowIndex % rowCount) * iWidth + rowHorizontalMargin + letterSize * 3
+                }
+                else -> {
+                    (rowIndex % rowCount) * iWidth + rowHorizontalMargin
+                }
+            }
+            val right = when (letterView.text) {
+                "CAPS", "DEL", "!#1", "Enter" -> {
+                    left + letterSize + rowHorizontalMargin
+                }
+                "space" -> {
+                    left + letterSize * 4
+                }
+                else -> {
+                    left + letterSize
+                }
+            }
+            letterView.layout(
+                left.toInt() + 4.dp.toInt(),
+                top.toInt() + 4.dp.toInt(),
+                right.toInt() - 4.dp.toInt(),
+                (top + iHeight - 4.dp).toInt()
+            )
+        }
+    }
+
+    private fun initLetters() {
+        numbers.forEach {
+            addView(
+                KeypadLetterView(
+                    context,
+                    text = it,
+                    onLetterClick = ::onLetterClick
+                )
+            )
+        }
+        firstLineLetters.forEach {
+            addView(
+                KeypadLetterView(
+                    context,
+                    text = it,
+                    onLetterClick = ::onLetterClick
+                )
+            )
+        }
+        secondLineLetters.forEach {
+            addView(
+                KeypadLetterView(
+                    context,
+                    text = it,
+                    onLetterClick = ::onLetterClick
+                )
+            )
+        }
+        thirdLineLetters.forEach {
+            when (it) {
+                "CAPS" -> {
+                    addView(
+                        KeypadLetterView(
+                            context = context,
+                            text = it,
+                            onFunctionClick = ::onCapsClick
+                        )
+                    )
+                }
+                "DEL" -> {
+                    addView(
+                        KeypadLetterView(
+                            context = context,
+                            text = it,
+                            onFunctionClick = ::onDelClick
+                        )
+                    )
+                }
+                else -> {
+                    addView(
+                        KeypadLetterView(
+                            context = context,
+                            text = it,
+                            onLetterClick = ::onLetterClick
+                        )
+                    )
+                }
+            }
+        }
+        fourthLineLetters.forEach {
+            when (it) {
+                "!@#" -> {
+                    addView(
+                        KeypadLetterView(
+                            context,
+                            text = it,
+                            onFunctionClick = ::onKeypadChangeClick
+                        )
+                    )
+                }
+                "한/영" -> {
+                    addView(
+                        KeypadLetterView(
+                            context,
+                            text = it,
+                            onFunctionClick = ::onKeypadChangeClick
+                        )
+                    )
+                }
+                "space" -> {
+                    addView(
+                        KeypadLetterView(
+                            context,
+                            text = it,
+                            onFunctionClick = ::onSpaceClick
+                        )
+                    )
+                }
+                "Enter" -> {
+                    addView(
+                        KeypadLetterView(
+                            context,
+                            text = it,
+                            onFunctionClick = ::onEnterClick
+                        )
+                    )
+                }
+                else -> {
+                    addView(
+                        KeypadLetterView(
+                            context,
+                            text = it,
+                            onLetterClick = ::onLetterClick
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    private fun onLetterClick(text: String?) {
+        inputConnection.commitText(text, 1)
+    }
+
+    private fun onCapsClick() {
+        // TODO: 한/영, 특수문자 변경 로직 작성
+    }
+
+    private fun onDelClick() {
+        inputConnection.deleteSurroundingText(1, 0)
+    }
+
+    private fun onSpaceClick() {
+        inputConnection.commitText(" ", 1)
+    }
+
+    private fun onEnterClick() {
+        inputConnection.commitText("\n", 1)
+    }
+
+    private fun onKeypadChangeClick() {
+        // TODO: 한/영, 특수문자 변경 로직 작성
+    }
+}

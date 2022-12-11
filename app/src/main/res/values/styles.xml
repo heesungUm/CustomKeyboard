@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Keyboard" />
+
+    <style name="Keyboard.KoreanKeypadStyle">
+        <item name="letterHeight">40dp</item>
+    </style>
+
+    <style name="Keyboard.LetterStyle">
+        <item name="keyboardTextSize">16sp</item>
+    </style>
+
+</resources>

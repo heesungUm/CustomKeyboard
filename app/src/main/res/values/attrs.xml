@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="KeyboardView">
+        <attr name="keyboardViewStyle" format="reference" />
+        <attr name="letterViewStyle" format="reference" />
+
+        <attr name="letterHeight" format="dimension" />
+        <attr name="keyboardTextSize" format="dimension" />
+    </declare-styleable>
+</resources>
