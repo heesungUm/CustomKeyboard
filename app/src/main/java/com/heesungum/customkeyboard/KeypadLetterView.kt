@@ -18,7 +18,7 @@ class KeypadLetterView(
     attrs: AttributeSet? = null,
     @AttrRes val defStyleAttr: Int = R.attr.letterViewStyle,
     @StyleRes private val defStyleRes: Int = R.style.Keyboard_LetterStyle,
-    val text: String,
+    private var text: String,
     private val onLetterClick: ((String) -> Unit)? = null,
     private val onFunctionClick: (() -> Unit)? = null
 ) : View(ContextThemeWrapper(context, defStyleRes), attrs, defStyleAttr), View.OnClickListener {
@@ -55,4 +55,11 @@ class KeypadLetterView(
         onLetterClick?.invoke(text)
         onFunctionClick?.invoke()
     }
+
+    fun setTextAndInvalidate(text: String) {
+        this.text = text
+        invalidate()
+    }
+
+    fun getText() = text
 }
