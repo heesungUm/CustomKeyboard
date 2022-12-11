@@ -22,12 +22,14 @@ class KoreanKeypadView @JvmOverloads constructor(
 
     private val numbers = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0")
     private val firstLineLetters = listOf("ㅂ", "ㅈ", "ㄷ", "ㄱ", "ㅅ", "ㅛ", "ㅕ", "ㅑ", "ㅐ", "ㅔ")
+    private val firstLineShiftLetters = listOf("ㅃ", "ㅉ", "ㄸ", "ㄲ", "ㅆ", "ㅛ", "ㅕ", "ㅑ", "ㅒ", "ㅖ")
     private val secondLineLetters = listOf("ㅁ", "ㄴ", "ㅇ", "ㄹ", "ㅎ", "ㅗ", "ㅓ", "ㅏ", "ㅣ")
-    private val thirdLineLetters = listOf("CAPS", "ㅋ", "ㅌ", "ㅊ", "ㅍ", "ㅠ", "ㅜ", "ㅡ", "DEL")
+    private val thirdLineLetters = listOf("Shift", "ㅋ", "ㅌ", "ㅊ", "ㅍ", "ㅠ", "ㅜ", "ㅡ", "DEL")
     private val fourthLineLetters = listOf("!#@", "한/영", ",", "space", ".", "Enter")
 
-
     private var _height: Float = 0f
+
+    private var isShift = false
 
     init {
         context.withStyledAttributes(attrs, R.styleable.KeyboardView, defStyleAttr, defStyleRes) {
@@ -91,8 +93,8 @@ class KoreanKeypadView @JvmOverloads constructor(
             }
 
             val iWidth = (width / 10).toFloat()
-            val left = when (letterView.text) {
-                "CAPS", "!#1" -> {
+            val left = when (letterView.getText()) {
+                "Shift", "!#1" -> {
                     0f
                 }
                 ".", "Enter" -> {
@@ -102,8 +104,8 @@ class KoreanKeypadView @JvmOverloads constructor(
                     (rowIndex % rowCount) * iWidth + rowHorizontalMargin
                 }
             }
-            val right = when (letterView.text) {
-                "CAPS", "DEL", "!#1", "Enter" -> {
+            val right = when (letterView.getText()) {
+                "Shift", "DEL", "!#1", "Enter" -> {
                     left + letterSize + rowHorizontalMargin
                 }
                 "space" -> {
@@ -152,12 +154,12 @@ class KoreanKeypadView @JvmOverloads constructor(
         }
         thirdLineLetters.forEach {
             when (it) {
-                "CAPS" -> {
+                "Shift" -> {
                     addView(
                         KeypadLetterView(
                             context = context,
                             text = it,
-                            onFunctionClick = ::onCapsClick
+                            onFunctionClick = ::onShiftClick
                         )
                     )
                 }
@@ -236,8 +238,17 @@ class KoreanKeypadView @JvmOverloads constructor(
         inputConnection.commitText(text, 1)
     }
 
-    private fun onCapsClick() {
-        // TODO: 한/영, 특수문자 변경 로직 작성
+    private fun onShiftClick() {
+        val targetList = if (isShift) {
+            firstLineLetters
+        } else {
+            firstLineShiftLetters
+        }
+        for (i in QWERTY_FIRST_LINE_START_POSITION..QWERTY_FIRST_LINE_END_POSITION) {
+            val letterView = children.elementAt(i) as KeypadLetterView
+            letterView.setTextAndInvalidate(targetList[i - QWERTY_FIRST_LINE_START_POSITION])
+        }
+        isShift = !isShift
     }
 
     private fun onDelClick() {
