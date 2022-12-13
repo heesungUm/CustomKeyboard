@@ -105,6 +105,14 @@ class KoreanAutomata(private val inputConnection: InputConnection) {
     private var doubleJongsungCode: Int? = null
 
     fun commit(char: Char) {
+        if (char.code < chosungCodes.first() || char.code > jungsungCodes.last()) {
+            if (state != 0) {
+                inputConnection.commitText(makeHangul(), 1)
+                clearState()
+            }
+            inputConnection.commitText(char.toString(), 1)
+            return
+        }
         when (state) {
             0 -> {
                 chosungCodes.indexOf(char.code).takeIf { it != -1 }?.let {
