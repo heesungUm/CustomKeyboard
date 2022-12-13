@@ -27,6 +27,9 @@ class KoreanKeypadView @JvmOverloads constructor(
     private val thirdLineLetters = listOf("Shift", "ㅋ", "ㅌ", "ㅊ", "ㅍ", "ㅠ", "ㅜ", "ㅡ", "DEL")
     private val fourthLineLetters = listOf("!#@", "한/영", ",", "space", ".", "Enter")
 
+    private val koreanAutomata = KoreanAutomata(inputConnection)
+
+
     private var _height: Float = 0f
 
     private var isShift = false
@@ -235,7 +238,11 @@ class KoreanKeypadView @JvmOverloads constructor(
     }
 
     private fun onLetterClick(text: String?) {
-        inputConnection.commitText(text, 1)
+        if (text?.length == 1) {
+            koreanAutomata.commit(text.toCharArray()[0])
+        } else {
+            inputConnection.commitText(text, 1)
+        }
     }
 
     private fun onShiftClick() {
@@ -252,11 +259,11 @@ class KoreanKeypadView @JvmOverloads constructor(
     }
 
     private fun onDelClick() {
-        inputConnection.deleteSurroundingText(1, 0)
+        koreanAutomata.delete()
     }
 
     private fun onSpaceClick() {
-        inputConnection.commitText(" ", 1)
+        koreanAutomata.commitSpace()
     }
 
     private fun onEnterClick() {
