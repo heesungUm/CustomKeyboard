@@ -16,7 +16,11 @@ class KeyboardService : InputMethodService() {
     private lateinit var getClipboardListUseCase: GetClipboardListUseCase
     private lateinit var putClipboardListUseCase: PutClipboardListUseCase
 
+    private lateinit var adapter: ClipboardAdapter
+
     private var clipboardList: MutableList<String> = mutableListOf()
+
+    private lateinit var koreanAutomata: KoreanAutomata
 
     override fun onCreate() {
         super.onCreate()
@@ -28,6 +32,13 @@ class KeyboardService : InputMethodService() {
 
         runBlocking {
             clipboardList = getClipboardListUseCase() ?: mutableListOf()
+            adapter = ClipboardAdapter(
+                clipboardList,
+                ::onClipboardItemClick,
+                ::onClipboardDeleteClick
+            )
+            binding.clipboardRv.adapter = adapter
+
             Log.d(TAG, "GetClipboardList: $clipboardList")
         }
 
@@ -38,18 +49,35 @@ class KeyboardService : InputMethodService() {
                 manager.primaryClip?.getItemAt(0)?.coerceToText(applicationContext)?.toString()
                     ?.let {
                         runBlocking {
-                            clipboardList.add(it)
-                            putClipboardListUseCase(clipboardList)
+                            if (clipboardList.indexOf(it) == -1) {
+                                clipboardList.add(it)
+                                putClipboardListUseCase(clipboardList)
+                                adapter.notifyDataSetChanged()
+                            }
                         }
                     }
+            }
+        }
+
+        binding.clipboardBtn.setOnClickListener {
+            it.isSelected = !it.isSelected
+
+            if (it.isSelected) {
+                binding.clipboardRv.visibility = View.VISIBLE
+                binding.keyboardFrame.visibility = View.INVISIBLE
+            } else {
+                binding.clipboardRv.visibility = View.GONE
+                binding.keyboardFrame.visibility = View.VISIBLE
             }
         }
     }
 
     override fun onCreateInputView(): View {
+        koreanAutomata = KoreanAutomata(currentInputConnection)
+
         val koreanKeypadView = KoreanKeypadView(
             context = applicationContext,
-            inputConnection = currentInputConnection
+            koreanAutomata = koreanAutomata
         )
 
         binding.keyboardFrame.addView(
@@ -57,6 +85,17 @@ class KeyboardService : InputMethodService() {
         )
         return binding.root
     }
+
+    private fun onClipboardItemClick(position: Int) {
+        koreanAutomata.commitString(clipboardList[getReversedClipboardPosition(position)])
+    }
+
+    private fun onClipboardDeleteClick(position: Int) {
+        clipboardList.removeAt(getReversedClipboardPosition(position))
+        adapter.notifyDataSetChanged()
+    }
+
+    private fun getReversedClipboardPosition(position: Int) = clipboardList.size - 1 - position
 
     companion object {
         private val TAG: String = KeyboardService::class.java.simpleName

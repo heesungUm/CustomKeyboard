@@ -204,6 +204,14 @@ class KoreanAutomata(private val inputConnection: InputConnection) {
         inputConnection.commitText(" ", 1)
     }
 
+    fun commitString(string: String){
+        if(state != 0){
+            inputConnection.commitText(makeHangul(), 1)
+        }
+        clearState()
+        inputConnection.commitText(string, 1)
+    }
+
     fun delete() {
         when (state) {
             0 -> {
