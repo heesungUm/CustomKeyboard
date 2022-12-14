@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
 import android.view.ViewGroup
-import android.view.inputmethod.InputConnection
 import androidx.annotation.AttrRes
 import androidx.annotation.StyleRes
 import androidx.appcompat.view.ContextThemeWrapper
@@ -17,7 +16,7 @@ class KoreanKeypadView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     @AttrRes defStyleAttr: Int = R.attr.keyboardViewStyle,
     @StyleRes defStyleRes: Int = R.style.Keyboard_KoreanKeypadStyle,
-    private val inputConnection: InputConnection,
+    private val koreanAutomata: KoreanAutomata
 ) : ViewGroup(ContextThemeWrapper(context, defStyleRes), attrs, defStyleAttr) {
 
     private val numbers = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0")
@@ -26,9 +25,6 @@ class KoreanKeypadView @JvmOverloads constructor(
     private val secondLineLetters = listOf("ㅁ", "ㄴ", "ㅇ", "ㄹ", "ㅎ", "ㅗ", "ㅓ", "ㅏ", "ㅣ")
     private val thirdLineLetters = listOf("Shift", "ㅋ", "ㅌ", "ㅊ", "ㅍ", "ㅠ", "ㅜ", "ㅡ", "DEL")
     private val fourthLineLetters = listOf("!#@", "한/영", ",", "space", ".", "Enter")
-
-    private val koreanAutomata = KoreanAutomata(inputConnection)
-
 
     private var _height: Float = 0f
 
@@ -238,10 +234,12 @@ class KoreanKeypadView @JvmOverloads constructor(
     }
 
     private fun onLetterClick(text: String?) {
-        if (text?.length == 1) {
-            koreanAutomata.commit(text.toCharArray()[0])
-        } else {
-            inputConnection.commitText(text, 1)
+        text?.let {
+            if (text.length == 1) {
+                koreanAutomata.commit(text.toCharArray()[0])
+            } else {
+                koreanAutomata.commitString(text)
+            }
         }
     }
 
@@ -267,7 +265,7 @@ class KoreanKeypadView @JvmOverloads constructor(
     }
 
     private fun onEnterClick() {
-        inputConnection.commitText("\n", 1)
+        koreanAutomata.commitString("\n")
     }
 
     private fun onKeypadChangeClick() {
