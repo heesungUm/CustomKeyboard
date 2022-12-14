@@ -2,7 +2,9 @@ package com.heesungum.customkeyboard
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Rect
 import android.util.AttributeSet
+import android.view.TouchDelegate
 import android.view.ViewGroup
 import androidx.annotation.AttrRes
 import androidx.annotation.StyleRes
@@ -35,6 +37,21 @@ class KoreanKeypadView @JvmOverloads constructor(
             _height = getDimension(R.styleable.KeyboardView_letterHeight, 0f)
         }
         initLetters()
+
+        val tc = TouchDelegateComposite(this)
+
+        children.forEach { view ->
+            view.post {
+                val rect = Rect()
+                view.getHitRect(rect)
+                rect.top -= 4.dp.toInt()
+                rect.left -= 4.dp.toInt()
+                rect.bottom += 4.dp.toInt()
+                rect.right += 4.dp.toInt()
+                tc.addDelegate(TouchDelegate(rect, view))
+            }
+        }
+        touchDelegate = tc
 
         setBackgroundColor(Color.BLACK)
     }
