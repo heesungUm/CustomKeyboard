@@ -91,8 +91,11 @@ class KeyboardService : InputMethodService() {
     }
 
     private fun onClipboardDeleteClick(position: Int) {
-        clipboardList.removeAt(getReversedClipboardPosition(position))
-        adapter.notifyDataSetChanged()
+        runBlocking {
+            clipboardList.removeAt(getReversedClipboardPosition(position))
+            putClipboardListUseCase(clipboardList)
+            adapter.notifyDataSetChanged()
+        }
     }
 
     private fun getReversedClipboardPosition(position: Int) = clipboardList.size - 1 - position

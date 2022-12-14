@@ -6,12 +6,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.heesungum.customkeyboard.databinding.ItemClipboardBinding
 
 
-/**
- *  ClipboardAdapter.kt
- *
- *  Created by Heesung Um on 2022/12/14
- *  Copyright © 2022 Shinhan Bank. All rights reserved.
- */
 
 class ClipboardAdapter(
     private val clipboardList: List<String>,
