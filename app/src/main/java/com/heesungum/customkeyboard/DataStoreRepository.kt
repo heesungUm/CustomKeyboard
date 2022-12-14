@@ -9,12 +9,6 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.first
 
 
-/**
- *  DataStoreRepository.kt
- *
- *  Created by Heesung Um on 2022/12/14
- *  Copyright © 2022 Shinhan Bank. All rights reserved.
- */
 
 val Context.datastore : DataStore<Preferences> by  preferencesDataStore(name = "KEYBOARD_DATASTORE")
 
