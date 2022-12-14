@@ -86,6 +86,20 @@ class KeyboardService : InputMethodService() {
         return binding.root
     }
 
+    override fun updateInputViewShown() {
+        super.updateInputViewShown()
+        currentInputConnection.finishComposingText()
+
+        val koreanKeypadView = KoreanKeypadView(
+            context = applicationContext,
+            koreanAutomata = koreanAutomata
+        )
+
+        binding.keyboardFrame.addView(
+            koreanKeypadView
+        )
+    }
+
     private fun onClipboardItemClick(position: Int) {
         koreanAutomata.commitString(clipboardList[getReversedClipboardPosition(position)])
     }
