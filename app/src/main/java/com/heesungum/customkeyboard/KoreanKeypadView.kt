@@ -26,7 +26,7 @@ class KoreanKeypadView @JvmOverloads constructor(
     private val firstLineShiftLetters = listOf("ㅃ", "ㅉ", "ㄸ", "ㄲ", "ㅆ", "ㅛ", "ㅕ", "ㅑ", "ㅒ", "ㅖ")
     private val secondLineLetters = listOf("ㅁ", "ㄴ", "ㅇ", "ㄹ", "ㅎ", "ㅗ", "ㅓ", "ㅏ", "ㅣ")
     private val thirdLineLetters = listOf("Shift", "ㅋ", "ㅌ", "ㅊ", "ㅍ", "ㅠ", "ㅜ", "ㅡ", "DEL")
-    private val fourthLineLetters = listOf("!#@", "한/영", ",", "space", ".", "Enter")
+    private val fourthLineLetters = listOf("!#1", "한/영", ",", "space", ".", "Enter")
 
     private var _height: Float = 0f
 
