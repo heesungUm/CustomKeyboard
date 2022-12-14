@@ -22,6 +22,8 @@ class KeyboardService : InputMethodService() {
 
     private lateinit var koreanAutomata: KoreanAutomata
 
+    private lateinit var koreanKeypad: KoreanKeypadView
+
     override fun onCreate() {
         super.onCreate()
         binding = KeyboardViewBinding.inflate(layoutInflater)
@@ -75,15 +77,32 @@ class KeyboardService : InputMethodService() {
     override fun onCreateInputView(): View {
         koreanAutomata = KoreanAutomata(currentInputConnection)
 
-        val koreanKeypadView = KoreanKeypadView(
+        koreanKeypad = KoreanKeypadView(
             context = applicationContext,
             koreanAutomata = koreanAutomata
         )
 
         binding.keyboardFrame.addView(
-            koreanKeypadView
+            koreanKeypad
         )
         return binding.root
+    }
+
+    override fun updateInputViewShown() {
+        super.updateInputViewShown()
+        currentInputConnection.finishComposingText()
+
+        koreanAutomata = KoreanAutomata(currentInputConnection)
+
+        koreanKeypad = KoreanKeypadView(
+            context = applicationContext,
+            koreanAutomata = koreanAutomata
+        )
+
+        binding.keyboardFrame.removeAllViews()
+        binding.keyboardFrame.addView(
+            koreanKeypad
+        )
     }
 
     private fun onClipboardItemClick(position: Int) {
