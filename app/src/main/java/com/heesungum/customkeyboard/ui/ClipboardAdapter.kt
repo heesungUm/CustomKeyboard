@@ -1,4 +1,4 @@
-package com.heesungum.customkeyboard
+package com.heesungum.customkeyboard.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

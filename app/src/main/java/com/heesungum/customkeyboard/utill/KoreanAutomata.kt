@@ -1,6 +1,7 @@
-package com.heesungum.customkeyboard
+package com.heesungum.customkeyboard.utill
 
 import android.view.inputmethod.InputConnection
+import com.heesungum.customkeyboard.usecase.MakeHangulUseCase
 
 class KoreanAutomata(private val inputConnection: InputConnection) {
     private val chosungCodes: List<Int> = listOf(
