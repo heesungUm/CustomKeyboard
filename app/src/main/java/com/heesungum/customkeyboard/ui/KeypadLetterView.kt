@@ -1,4 +1,4 @@
-package com.heesungum.customkeyboard
+package com.heesungum.customkeyboard.ui
 
 import android.content.Context
 import android.graphics.Canvas
@@ -12,6 +12,7 @@ import androidx.annotation.StyleRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.withStyledAttributes
+import com.heesungum.customkeyboard.R
 
 class KeypadLetterView(
     context: Context,

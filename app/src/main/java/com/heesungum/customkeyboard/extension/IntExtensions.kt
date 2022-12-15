@@ -1,4 +1,4 @@
-package com.heesungum.customkeyboard
+package com.heesungum.customkeyboard.extension
 
 import android.content.res.Resources
 

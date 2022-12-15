@@ -1,4 +1,4 @@
-package com.heesungum.customkeyboard
+package com.heesungum.customkeyboard.ui
 
 import android.content.Context
 import android.graphics.Color
@@ -11,6 +11,10 @@ import androidx.annotation.StyleRes
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.withStyledAttributes
 import androidx.core.view.children
+import com.heesungum.customkeyboard.*
+import com.heesungum.customkeyboard.extension.dp
+import com.heesungum.customkeyboard.utill.KoreanAutomata
+import com.heesungum.customkeyboard.utill.TouchDelegateComposite
 import kotlin.math.max
 
 class KoreanKeypadView @JvmOverloads constructor(

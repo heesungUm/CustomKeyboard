@@ -6,15 +6,24 @@ import android.inputmethodservice.InputMethodService
 import android.util.Log
 import android.view.View
 import com.heesungum.customkeyboard.databinding.KeyboardViewBinding
+import com.heesungum.customkeyboard.ui.ClipboardAdapter
+import com.heesungum.customkeyboard.ui.KoreanKeypadView
+import com.heesungum.customkeyboard.usecase.GetClipboardListUseCase
+import com.heesungum.customkeyboard.usecase.PutClipboardListUseCase
+import com.heesungum.customkeyboard.utill.KoreanAutomata
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class KeyboardService : InputMethodService() {
     private lateinit var binding: KeyboardViewBinding
 
-    private lateinit var dataStoreRepository: DataStoreRepository
-    private lateinit var getClipboardListUseCase: GetClipboardListUseCase
-    private lateinit var putClipboardListUseCase: PutClipboardListUseCase
+    @Inject
+    lateinit var getClipboardListUseCase: GetClipboardListUseCase
+
+    @Inject
+    lateinit var putClipboardListUseCase: PutClipboardListUseCase
 
     private lateinit var adapter: ClipboardAdapter
 
@@ -27,10 +36,6 @@ class KeyboardService : InputMethodService() {
     override fun onCreate() {
         super.onCreate()
         binding = KeyboardViewBinding.inflate(layoutInflater)
-
-        dataStoreRepository = DataStoreRepository(applicationContext)
-        getClipboardListUseCase = GetClipboardListUseCase(dataStoreRepository)
-        putClipboardListUseCase = PutClipboardListUseCase(dataStoreRepository)
 
         runBlocking {
             clipboardList = getClipboardListUseCase() ?: mutableListOf()
