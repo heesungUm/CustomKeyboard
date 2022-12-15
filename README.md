@@ -43,3 +43,7 @@ https://user-images.githubusercontent.com/50452867/207613488-f55e766f-66a8-43a5-
 ## 아쉬운 점
 - kotlin coroutine을 제대로 활용하지 못한 점이 아쉽습니다. IMEService의 LifeCycle을 고려해 coroutine을 제대로 활용해보고 싶습니다.
 
+- 프로젝트에 어떤 아키택쳐를 사용할지 깊게 고민하지 못한 점이 아쉽습니다. 기존 개발하며 사용하던 Activity, Fragment등을 사용하는 구조에 익숙해, 짧은 시간 안에 IMEService에는 아키텍쳐를 어떻게 적용해야할지 감을 제대로 잡지 못한 것 같습니다.
+
+- 소프트 키보드를 어떻게 만들어야할지 충분히 연구하지 못한 점이 아쉽습니다. aosp의 latinIME이나, 다른 예시들을 찾아보며 어떻게 IME, 키보드뷰를 구성하는 것이 최선인지 공부해보고 싶습니다. 
+
